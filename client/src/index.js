@@ -9,6 +9,7 @@ import {
 import thunk from "redux-thunk";
 
 import App from "./App";
+import "./index.css"
 
 import reducers from "./reducers";
 
