@@ -10,24 +10,44 @@ import {
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
 import { useGoogleLogin } from "@react-oauth/google";
 import { useDispatch } from "react-redux";
-import {useHistory} from 'react-router-dom';
+import { useHistory } from "react-router-dom";
 import axios from "axios";
 import Input from "./Input";
+import { signup, signin } from "../../actions/auth";
 
 import useStyles from "./styles";
+
+const initialState = {
+  firstName: "",
+  lastName: "",
+  email: "",
+  password: "",
+  confirmPassword: "",
+};
 
 function Auth() {
   const classes = useStyles();
   const [showPassword, setShowPassword] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false);
+  const [formData, setFormData] = useState(initialState);
   const dispatch = useDispatch();
   const history = useHistory();
 
   const handleShowPassword = () =>
     setShowPassword((prevShowPassword) => !prevShowPassword);
 
-  const handleSubmit = () => {};
-  const handleChange = () => {};
+  const handleSubmit = (event) => {
+    event.preventDefault();
+
+    if (isSignUp) {
+      dispatch(signup(formData, history));
+    } else {
+      dispatch(signin(formData, history));
+    }
+  };
+  const handleChange = (event) => {
+    setFormData({ ...formData, [event.target.name]: event.target.value });
+  };
   const switchMode = () => {
     setIsSignUp((prevIsSignUp) => !prevIsSignUp);
     handleShowPassword(false);
@@ -50,7 +70,7 @@ function Auth() {
       try {
         dispatch({ type: "AUTH", data: { result, token } });
 
-        history.push('/');
+        history.push("/");
       } catch (error) {
         console.log(error);
       }
@@ -76,8 +96,8 @@ function Auth() {
                   half
                 />
                 <Input
-                  name="firstName"
-                  label="First Name"
+                  name="lastName"
+                  label="Last Name"
                   handleChange={handleChange}
                   half
                 />
