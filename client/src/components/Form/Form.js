@@ -1,50 +1,61 @@
 import React, { useState, useEffect } from "react";
 import { TextField, Button, Typography, Paper } from "@material-ui/core";
 import FileBase64 from "react-file-base64";
-import {useDispatch, useSelector} from "react-redux";
-import {createPost, updatePost} from "../../actions/posts";
+import { useDispatch, useSelector } from "react-redux";
+import { createPost, updatePost } from "../../actions/posts";
 
 import useStyles from "./styles";
 
-function Form({currentId, setCurrentId}) {
+function Form({ currentId, setCurrentId }) {
   const [postData, setPostData] = useState({
-    creator: "",
     title: "",
     message: "",
     tags: "",
     selectedFile: "",
   });
-  const post = useSelector((state) => currentId ? state.posts.find(p => p._id === currentId) : null);
+  const post = useSelector((state) =>
+    currentId ? state.posts.find((p) => p._id === currentId) : null
+  );
   const classes = useStyles();
   const dispatch = useDispatch();
+  const user = JSON.parse(localStorage.getItem("profile"));
 
   useEffect(() => {
-    if(post){
+    if (post) {
       setPostData(post);
     }
-  }, [post])
+  }, [post]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if(currentId){
-      dispatch(updatePost(currentId, postData))
+    if (currentId) {
+      dispatch(
+        updatePost(currentId, { ...postData, name: user?.result?.name })
+      );
+      clear();
     } else {
-      dispatch(createPost(postData))
+      dispatch(createPost({ ...postData, name: user?.result?.name }));
+      clear();
     }
-
-    clear();
   };
 
   const clear = () => {
     setCurrentId(null);
     setPostData({
-      creator: "",
       title: "",
       message: "",
       tags: "",
       selectedFile: "",
-    })
+    });
   };
+
+  if(!user?.result?.name){
+    return (
+      <Paper className={classes.paper}>
+        <Typography variant="h6" align='center'>Please sign in to create your own memories and like other's memories</Typography>
+      </Paper>
+    )
+  }
   return (
     <Paper className={classes.paper}>
       <form
@@ -53,8 +64,10 @@ function Form({currentId, setCurrentId}) {
         className={`${classes.root} ${classes.form}`}
         onSubmit={handleSubmit}
       >
-        <Typography variant="h6">{currentId ? 'Editing' : 'Creating'} a Memory</Typography>
-        <TextField
+        <Typography variant="h6">
+          {currentId ? "Editing" : "Creating"} a Memory
+        </Typography>
+        {/* <TextField
           name="creator"
           variant="outlined"
           label="Creator"
@@ -63,7 +76,7 @@ function Form({currentId, setCurrentId}) {
           onChange={(e) =>
             setPostData({ ...postData, creator: e.target.value })
           }
-        />
+        /> */}
         <TextField
           name="title"
           variant="outlined"
@@ -88,13 +101,15 @@ function Form({currentId, setCurrentId}) {
           label="Tags"
           fullWidth
           value={postData.tags}
-          onChange={(e) => setPostData({ ...postData, tags: e.target.value.split(',') })}
+          onChange={(e) =>
+            setPostData({ ...postData, tags: e.target.value.split(",") })
+          }
         />
         <div className={classes.fileInput}>
           <FileBase64
             type="file"
             multiple={false}
-            onDone={({base64}) =>
+            onDone={({ base64 }) =>
               setPostData({ ...postData, selectedFile: base64 })
             }
           />
@@ -115,10 +130,12 @@ function Form({currentId, setCurrentId}) {
           size="small"
           fullWidth
           onClick={clear}
-        >Clear</Button>
+        >
+          Clear
+        </Button>
       </form>
     </Paper>
   );
 }
 
-export default Form; 
+export default Form;
