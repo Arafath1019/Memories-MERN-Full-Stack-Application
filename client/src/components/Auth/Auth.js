@@ -8,10 +8,10 @@ import {
   Container,
 } from "@material-ui/core";
 import LockOutlinedIcon from "@material-ui/icons/LockOutlined";
-import { useGoogleLogin } from "@react-oauth/google";
+// import { useGoogleLogin } from "@react-oauth/google";
 import { useDispatch } from "react-redux";
 import { useHistory } from "react-router-dom";
-import axios from "axios";
+// import axios from "axios";
 import Input from "./Input";
 import { signup, signin } from "../../actions/auth";
 
@@ -50,32 +50,32 @@ function Auth() {
   };
   const switchMode = () => {
     setIsSignUp((prevIsSignUp) => !prevIsSignUp);
-    handleShowPassword(false);
+    setShowPassword(false);
   };
 
-  const login = useGoogleLogin({
-    onSuccess: async (tokenResponse) => {
-      const userInfo = await axios
-        .get("https://www.googleapis.com/oauth2/v3/userinfo", {
-          headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
-        })
-        .then((res) => res.data)
-        .catch((error) => {
-          console.log(error);
-        });
+  // const login = useGoogleLogin({
+  //   onSuccess: async (tokenResponse) => {
+  //     const userInfo = await axios
+  //       .get("https://www.googleapis.com/oauth2/v3/userinfo", {
+  //         headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
+  //       })
+  //       .then((res) => res.data)
+  //       .catch((error) => {
+  //         console.log(error);
+  //       });
 
-      const result = userInfo;
-      const token = tokenResponse.access_token;
+  //     const result = userInfo;
+  //     const token = tokenResponse.access_token;
 
-      try {
-        dispatch({ type: "AUTH", data: { result, token } });
+  //     try {
+  //       dispatch({ type: "AUTH", data: { result, token } });
 
-        history.push("/");
-      } catch (error) {
-        console.log(error);
-      }
-    },
-  });
+  //       history.push("/");
+  //     } catch (error) {
+  //       console.log(error);
+  //     }
+  //   },
+  // });
 
   return (
     <Container component="main" maxWidth="xs">
@@ -134,7 +134,7 @@ function Auth() {
           >
             {isSignUp ? "Sign Up" : "Sign In"}
           </Button>
-          <Button
+          {/* <Button
             type="submit"
             fullWidth
             variant="contained"
@@ -143,7 +143,7 @@ function Auth() {
             onClick={() => login()}
           >
             GOOGLE SIGN IN
-          </Button>
+          </Button> */}
           <Grid container justifyContent="flex-end">
             <Grid item>
               <Button onClick={switchMode}>
